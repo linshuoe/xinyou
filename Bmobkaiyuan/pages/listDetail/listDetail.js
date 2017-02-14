@@ -509,6 +509,7 @@ publishComment:function(e){//评论心情
                       success: function(object) {
                         object.set('commentNum',object.get("commentNum")+1);
                         object.save();
+                        that.onShow();
                       },
                       error: function(object, error) {
                         // 查询失败

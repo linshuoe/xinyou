@@ -18,8 +18,6 @@ Page({
     that.setData({
       loading: false
     })
-
-
   },
   onReady: function () {
 
@@ -27,30 +25,26 @@ Page({
   },
   onShow: function () {
     molist = new Array();
+    var myInterval = setInterval(getReturn, 500);
+    function getReturn() {
     wx.getStorage({
               key: 'user_id',
               success: function(ress) {
                   if(ress.data){
+                    clearInterval(myInterval)
                       var Diary = Bmob.Object.extend("Diary");
                       var query = new Bmob.Query(Diary);
                       var isme = new Bmob.User();
                       isme.id=ress.data;
                       query.equalTo("publisher", isme);
                       query.descending("createdAt");
-                      // query.limit(that.data.limit);
-                      // if(that.data.limit>6){
-                      //   query.skip(that.data.limit-2); 
-                      // }
-                      // else if(that.data.limit==6&&that.data.moodList.length>0){
-                      //   query.skip(that.data.limit); 
-                      // }
                       query.find({
                         success: function(results) {
                           that.setData({
                               loading: true
                             });
                           for (var i = 0; i < results.length; i++) {
-                            var a;
+                            var jsonA;
                             var title=results[i].get("title");
                             var content=results[i].get("content");
                             var id=results[i].id;
@@ -59,13 +53,13 @@ Page({
                             var ishide=results[i].get("is_hide");
                             var pic=results[i].get("pic");
                             if(pic){
-                                a='{"title":"'+title+'","content":"'+content+'","id":"'+id+'","created_at":"'+created_at+'","attachment":"'+pic._url+'","status":"'+ishide+'"}'
+                                jsonA='{"title":"'+title+'","content":"'+content+'","id":"'+id+'","created_at":"'+created_at+'","attachment":"'+pic._url+'","status":"'+ishide+'"}'
                             }
                             else{
-                              a='{"title":"'+title+'","content":"'+content+'","id":"'+id+'","created_at":"'+created_at+'","status":"'+ishide+'"}'
+                              jsonA='{"title":"'+title+'","content":"'+content+'","id":"'+id+'","created_at":"'+created_at+'","status":"'+ishide+'"}'
                             }
-                            var b=JSON.parse(a);
-                            molist.push(b)
+                            var jsonB=JSON.parse(jsonA);
+                            molist.push(jsonB)
                             that.setData({
                               moodList:molist,
                               loading: true
@@ -85,7 +79,7 @@ Page({
                   }
               }
             }) 
-
+    }
     wx.getSystemInfo({
       success: (res) => {
         that.setData({
@@ -96,7 +90,6 @@ Page({
     })
   },
   onHide: function () {
-    // Do something when hide.
   },
   onUnload: function (event) {
 
